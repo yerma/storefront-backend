@@ -24,16 +24,6 @@ const create = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-const edit = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  try {
-    const updatedProduct = await store.edit(id, req.body as unknown as Product)
-    res.json(updatedProduct)
-  } catch (err) {
-    res.status(400).send(`Product with id ${id} could not be updated: ${err}`)
-  }
-}
-
 const destroy = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   try {
@@ -48,7 +38,6 @@ const product_routes = (app: express.Application): void => {
   app.get('/products', index)
   app.get('/products/:id', show)
   app.post('/products', create)
-  app.put('/products/:id', edit)
   app.delete('/products/:id', destroy)
 }
 
