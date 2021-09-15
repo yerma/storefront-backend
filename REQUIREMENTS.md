@@ -38,8 +38,8 @@ Additional
 
 #### User
 - id
-- firstName
-- lastName
+- first_name
+- last_name
 - password
 
 #### Orders

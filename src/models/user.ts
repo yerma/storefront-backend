@@ -8,11 +8,11 @@ const saltRounds: string = process.env.SALT_ROUNDS || ''
 
 export type User = {
   id?: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password?: string;
-  passwordDigest?: string;
+  password_digest?: string;
 }
 
 export class UserStore {
@@ -42,14 +42,14 @@ export class UserStore {
 
   async create(user: User): Promise<User> {
     try {
-      const { firstName, lastName, email, password } = user;
+      const { first_name, last_name, email, password } = user;
       const conn = await Client.connect();
       const passwordDigest = bcrypt.hashSync(
         password + pepper,
         parseInt(saltRounds)
       )
-      const sql = 'INSERT INTO users (first_name, last_name, email, password_digest) VALUES ($1, $2, $3, $4);'
-      const newUser = await conn.query(sql, [firstName, lastName, email, passwordDigest])
+      const sql = 'INSERT INTO users (first_name, last_name, email, password_digest) VALUES ($1, $2, $3, $4) RETURNING *;'
+      const newUser = await conn.query(sql, [first_name, last_name, email, passwordDigest])
       conn.release()
       return newUser.rows[0] as unknown as User
     } catch (err) {
@@ -59,10 +59,10 @@ export class UserStore {
 
   async edit(id: string, user: User): Promise<User> {
     try {
-      const { firstName, lastName, email, passwordDigest } = user;
+      const { first_name, last_name, email, password_digest } = user;
       const conn = await Client.connect();
-      const sql = 'UPDATE users SET first_name = ($2), last_name = ($3), email = ($4), password_digest = ($5) WHERE id = ($1);'
-      const editedUser = await conn.query(sql, [id, firstName, lastName, email, passwordDigest])
+      const sql = 'UPDATE users SET first_name = ($2), last_name = ($3), email = ($4), password_digest = ($5) WHERE id = ($1) RETURNING *;'
+      const editedUser = await conn.query(sql, [id, first_name, last_name, email, password_digest])
       conn.release()
       return editedUser.rows[0] as unknown as User
     } catch (err) {
@@ -73,7 +73,7 @@ export class UserStore {
   async delete(id: string): Promise<User> {
     try {
       const conn = await Client.connect();
-      const sql = 'DELETE FROM users WHERE id = ($1);'
+      const sql = 'DELETE FROM users WHERE id = ($1) RETURNING *;'
       const deletedUser = await conn.query(sql, [id])
       conn.release()
       return deletedUser.rows[0] as unknown as User
