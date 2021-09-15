@@ -33,8 +33,8 @@ export class OrderStore {
     }
   }
 
-  async ordersByUser(userId: string, status: string): Promise<Order[]> {
-    const statusQuery = status ? `AND o.status = '${status}'` : ''
+  async ordersByUser(userId: string, status: string = ''): Promise<Order[]> {
+    const statusQuery = status.length ? `AND o.status = '${status}'` : ''
     try {
       const conn = await Client.connect();
       const sql = `SELECT o.id, o.user_id, o.status,
