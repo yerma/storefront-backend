@@ -3,28 +3,18 @@ import { DashboardQueries } from '../services/dashboard'
 
 const dashboard = new DashboardQueries()
 
-const topFiveProducts = async (req: Request, res: Response ) => {
+const topProducts = async (req: Request, res: Response ) => {
+  const { limit } = req.query
   try {
-    const topProducts = await dashboard.topFiveProducts()
+    const topProducts = await dashboard.topProducts(parseInt(limit as string))
     res.json(topProducts)
   } catch (err) {
-    res.status(400).send(`Error fetching top five products`)
-  }
-}
-
-const completedOrdersByUser = async (req: Request, res: Response) => {
-  const { userId } = req.params
-  try {
-    const orders = await dashboard.completedOrdersByUser(userId)
-    res.json(orders)
-  } catch (err) {
-    res.status(400).send(`Error fetching top five products`)
+    res.status(400).send(`Error fetching top ${limit} products`)
   }
 }
 
 const dashboardRoutes = (app: express.Application) => {
-  app.get('/top-five-products', topFiveProducts)
-  app.get('/users/:userId/orders?completed', completedOrdersByUser)
+  app.get('/top-products', topProducts) // Use query param 'limit' to limit number of results
 }
 
 export default dashboardRoutes
