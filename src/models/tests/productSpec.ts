@@ -14,9 +14,9 @@ describe('Product Model', () => {
     expect(product).toBeDefined()
   })
 
-  it('index method should return empty array ', async () => {
+  it('index method should return at least one product ', async () => {
     const result = await store.index()
-    expect(result.length).toEqual(1)
+    expect(result.length).toBeGreaterThan(0)
   })
 
   it('show method should return product with provided id', async () => {
