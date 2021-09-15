@@ -22,8 +22,8 @@ export class OrderStore {
   async index(): Promise<Order[]> {
     try {
       const conn = await Client.connect();
-      const sql = `SELECT o.id, o.status, o.user_id,
-        ${nestedQuery(`SELECT op.product_id AS id, op.quantity FROM order_products AS op WHERE o.id = op.order_id`)} as products
+      const sql = `SELECT o.id, o.user_id, o.status,
+        ${nestedQuery(`SELECT op.product_id AS id, op.quantity FROM order_products AS op WHERE o.id = op.order_id`)} AS products
         FROM orders AS o;`
       const result = await conn.query(sql)
       conn.release()
@@ -37,11 +37,10 @@ export class OrderStore {
     const statusQuery = status ? `AND o.status = '${status}'` : ''
     try {
       const conn = await Client.connect();
-      const sql = `SELECT o.id, o.status, o.user_id,
-        ${nestedQuery(`SELECT op.product_id AS id, op.quantity FROM order_products AS op WHERE o.id = op.order_id`)} as products
+      const sql = `SELECT o.id, o.user_id, o.status,
+        ${nestedQuery(`SELECT op.product_id AS id, op.quantity FROM order_products AS op WHERE o.id = op.order_id`)} AS products
         FROM orders AS o
         WHERE o.user_id = ($1) ${statusQuery};`
-        console.log(sql)
       const result = await conn.query(sql, [userId])
       conn.release()
       return result.rows as unknown as Order[]
@@ -53,8 +52,8 @@ export class OrderStore {
   async show(orderId: string): Promise<Order> {
     try {
       const conn = await Client.connect();
-      const sql = `SELECT o.id, o.user_id, o.status, o.user_id,
-        ${nestedQuery(`SELECT op.product_id AS id, op.quantity FROM order_products AS op WHERE o.id = op.order_id`)} as products
+      const sql = `SELECT o.id, o.user_id, o.status,
+        ${nestedQuery(`SELECT op.product_id AS id, op.quantity FROM order_products AS op WHERE o.id = op.order_id`)} AS products
         FROM orders AS o
         WHERE o.id = ($1);`
       const result = await conn.query(sql, [orderId])
@@ -68,7 +67,7 @@ export class OrderStore {
   async create (userId: string): Promise<Order> {
     try {
       const conn = await Client.connect();
-      const sql = 'INSERT INTO orders (status, user_id) VALUES ($1, $2);'
+      const sql = 'INSERT INTO orders (status, user_id) VALUES ($1, $2) RETURNING *;'
       const result = await conn.query(sql, ['active', userId])
       conn.release()
       return result.rows[0] as unknown as Order
@@ -93,7 +92,7 @@ export class OrderStore {
 
     try {
       const conn = await Client.connect();
-      const sql = "INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3);"
+      const sql = "INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *;"
       const result = await conn.query(sql, [orderId, productId, quantity])
       conn.release()
       return result.rows[0] as unknown as Order
@@ -105,7 +104,7 @@ export class OrderStore {
   async completeOrder(orderId: string) {
     try {
       const conn = await Client.connect();
-      const sql = "UPDATE orders SET status = 'complete' WHERE id = ($1);"
+      const sql = "UPDATE orders SET status = 'complete' WHERE id = ($1) RETURNING *;"
       const result = await conn.query(sql, [orderId])
       conn.release()
       return result.rows[0] as unknown as Order
