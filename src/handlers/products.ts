@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import { Product, ProductStore } from '../models/product'
 
-const store = new ProductStore()
+export const store = new ProductStore()
 
 const index = async (_req: Request, res: Response): Promise<void> => {
   const products = await store.index()
@@ -34,11 +34,11 @@ const destroy = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-const product_routes = (app: express.Application): void => {
+const productRoutes = (app: express.Application): void => {
   app.get('/products', index)
   app.get('/products/:id', show)
   app.post('/products', create)
   app.delete('/products/:id', destroy)
 }
 
-export default product_routes;
+export default productRoutes;
