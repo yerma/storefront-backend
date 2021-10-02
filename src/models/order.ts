@@ -95,7 +95,7 @@ export class OrderStore {
       const sql = "INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *;"
       const result = await conn.query(sql, [orderId, productId, quantity])
       conn.release()
-      return result.rows[0] as unknown as Order
+      return result.rows[0] as unknown as { order_id: string, product_id: string, quantity: number }
     } catch (err) {
       throw new Error(`Error adding products to order ${orderId}: ${err}`)
     }

@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import { DashboardQueries } from '../services/dashboard'
 
-const dashboard = new DashboardQueries()
+export const dashboard = new DashboardQueries()
 
 const topProducts = async (req: Request, res: Response ) => {
   const { limit } = req.query
