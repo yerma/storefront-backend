@@ -8,7 +8,7 @@ const orderStore = new OrderStore()
 const userStore = new UserStore()
 const productStore = new ProductStore()
 
-describe('Order Model', () => {
+describe('Dashboard Service', () => {
   let order: Order;
   let user: User;
   let productA: Product;
@@ -32,7 +32,7 @@ describe('Order Model', () => {
 
   it('should top products in descending order of popularity', async () => {
     const topProducts = await dashboard.topProducts(2)
-    expect(topProducts[0].id).toEqual(productB.id as string)
-    expect(topProducts[1].id).toEqual(productA.id as string)
+    expect(topProducts[0].id).toEqual(productB?.id as string)
+    expect(topProducts[1].id).toEqual(productA?.id as string)
   })
 })
