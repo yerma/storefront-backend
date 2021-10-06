@@ -9,12 +9,14 @@ const userStore = new UserStore();
 const productStore = new ProductStore();
 
 describe("Dashboard Service", () => {
+  const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
   let order: Order;
   let user: User;
   let productA: Product;
   let productB: Product;
 
   beforeAll(async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     user = await userStore.create({
       first_name: "Maria Fernando",
       last_name: "Castillo",
@@ -36,6 +38,10 @@ describe("Dashboard Service", () => {
     order = await orderStore.create(user.id as string);
     await orderStore.addProduct(order.id as string, productA.id as string, 3);
     await orderStore.addProduct(order.id as string, productB.id as string, 8);
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   it("should top products in descending order of popularity", async () => {
