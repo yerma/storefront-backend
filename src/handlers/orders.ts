@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { OrderStore } from "../models/order";
+import { verifyAuthToken } from "./middleware";
 
 export const store = new OrderStore();
 
@@ -64,12 +65,12 @@ const ordersByUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 const orderRoutes = (app: express.Application) => {
-  app.get("/orders", index);
-  app.get("/orders/:id", show);
-  app.patch("/orders/:id/complete", completeOrder);
-  app.get("/users/:userId/orders", ordersByUser); // use status query param to get either complete or active orders
-  app.post("/users/:userId/orders", create);
-  app.post("/users/:userId/orders/:orderId", addProducts);
+  app.get("/orders", verifyAuthToken, index);
+  app.get("/orders/:id", verifyAuthToken, show);
+  app.patch("/orders/:id/complete", verifyAuthToken, completeOrder);
+  app.get("/users/:userId/orders", verifyAuthToken, ordersByUser); // use status query param to get either complete or active orders
+  app.post("/users/:userId/orders", verifyAuthToken, create);
+  app.post("/users/:userId/orders/:orderId", verifyAuthToken, addProducts);
 };
 
 export default orderRoutes;
