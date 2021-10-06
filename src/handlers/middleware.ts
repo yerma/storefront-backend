@@ -1,18 +1,21 @@
-import { Request, Response, NextFunction } from 'express'
-import dotenv from 'dotenv'
-import jwt, { Secret } from 'jsonwebtoken'
+import { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
+import jwt, { Secret } from "jsonwebtoken";
 
-dotenv.config()
+dotenv.config();
 
-export const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
+export const verifyAuthToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const authorizationHeader = req.headers.authorization
-    const token = authorizationHeader?.split(' ')[1] || ''
-    jwt.verify(token, process.env.TOKEN_SECRET as Secret)
+    const authorizationHeader = req.headers.authorization;
+    const token = authorizationHeader?.split(" ")[1] || "";
+    jwt.verify(token, process.env.TOKEN_SECRET as Secret);
 
-    next()
+    next();
   } catch (err) {
-    res.status(401)
-      .json(err)
+    res.status(401).json(err);
   }
-}
+};

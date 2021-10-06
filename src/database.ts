@@ -1,7 +1,7 @@
-import dotenv from 'dotenv';
-import { Pool } from 'pg';
+import dotenv from "dotenv";
+import { Pool } from "pg";
 
-dotenv.config()
+dotenv.config();
 
 const {
   NODE_ENV,
@@ -14,12 +14,12 @@ const {
 
 let client: Pool;
 
-if (NODE_ENV === 'development') {
-  client = new Pool({ host, database, user, password })
-} else if (NODE_ENV === 'test') {
-  client = new Pool({ host, user, password, database: testDatabase })
+if (NODE_ENV === "development") {
+  client = new Pool({ host, database, user, password });
+} else if (NODE_ENV === "test") {
+  client = new Pool({ host, user, password, database: testDatabase });
 } else {
-  throw new Error('DB Pool not initialized.')
+  throw new Error("DB Pool not initialized.");
 }
 
 export default client;
