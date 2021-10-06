@@ -1,7 +1,8 @@
+import express, { json } from "express";
 import supertest from "supertest";
 import sinon from "sinon";
-import app from "../../server";
 import { store } from "../products";
+import { authMiddlewareStub } from "./middlewareMock";
 
 const product = {
   id: "1",
@@ -10,9 +11,17 @@ const product = {
   category: "shoes",
 };
 
+const app = express();
+app.use(json());
+import productRoutes from "../products";
+productRoutes(app);
 const request = supertest(app);
 
 describe("Products handler specs", () => {
+  afterEach(() => {
+    authMiddlewareStub.resetHistory();
+  });
+
   describe("GET /products", () => {
     it("should fetch list of products", async () => {
       sinon.stub(store, "index").resolves([product]);
@@ -43,6 +52,7 @@ describe("Products handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(product);
       sinon.assert.calledWith(stub, product);
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 
@@ -54,6 +64,7 @@ describe("Products handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(product);
       sinon.assert.calledWith(stub, "1");
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 });

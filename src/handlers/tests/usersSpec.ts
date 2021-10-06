@@ -3,7 +3,7 @@ import supertest from "supertest";
 import sinon from "sinon";
 import jwt from "jsonwebtoken";
 import { store } from "../users";
-import * as authMiddleware from "../middleware";
+import { authMiddlewareStub } from "./middlewareMock";
 
 const user = {
   id: "1",
@@ -13,10 +13,6 @@ const user = {
   password: "awrawriwra",
 };
 
-const authMiddlewareStub = sinon
-  .stub(authMiddleware, "verifyAuthToken")
-  .callsFake((req, res, next) => next());
-
 const app = express();
 app.use(json());
 import userRoutes from "../users";
@@ -24,6 +20,10 @@ userRoutes(app);
 const request = supertest(app);
 
 describe("Users handler specs", () => {
+  afterEach(() => {
+    authMiddlewareStub.resetHistory();
+  });
+
   describe("GET /users", () => {
     it("should fetch list of users", async () => {
       sinon.stub(store, "index").resolves([user]);

@@ -1,7 +1,8 @@
+import express, { json } from "express";
 import supertest from "supertest";
 import sinon from "sinon";
-import app from "../../server";
 import { store } from "../orders";
+import { authMiddlewareStub } from "./middlewareMock";
 
 const product = { id: "1", quantity: 2 };
 
@@ -12,15 +13,24 @@ const order = {
   products: [product],
 };
 
+const app = express();
+app.use(json());
+import orderRoutes from "../orders";
+orderRoutes(app);
 const request = supertest(app);
 
 describe("Order handler specs", () => {
+  afterEach(() => {
+    authMiddlewareStub.resetHistory();
+  });
+
   describe("GET /orders", () => {
     it("should fetch list of orders", async () => {
       sinon.stub(store, "index").resolves([order]);
       const response = await request.get("/orders");
       expect(response.status).toBe(200);
       expect(response.body.length).toEqual(1);
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 
@@ -31,6 +41,7 @@ describe("Order handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(order);
       sinon.assert.calledWith(stub, "1");
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 
@@ -43,6 +54,7 @@ describe("Order handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(completeOrder);
       sinon.assert.calledWith(stub, orderId);
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 
@@ -54,6 +66,7 @@ describe("Order handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual([order]);
       sinon.assert.calledWith(stub, userId);
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 
@@ -70,6 +83,7 @@ describe("Order handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(newOrder);
       sinon.assert.calledWith(stub, userId);
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 
@@ -93,6 +107,7 @@ describe("Order handler specs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(orderProduct);
       sinon.assert.calledWith(stub, orderId, product.id, product.quantity);
+      sinon.assert.called(authMiddlewareStub);
     });
   });
 });
