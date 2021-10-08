@@ -7,11 +7,14 @@ const userStore = new UserStore();
 const productStore = new ProductStore();
 
 describe("Order Model", () => {
+  const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
   let order: Order;
   let user: User;
   let product: Product;
 
   beforeAll(async () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
     user = await userStore.create({
       first_name: "Maria Fernando",
       last_name: "Castillo",
@@ -24,6 +27,10 @@ describe("Order Model", () => {
       price: 50,
       category: "footwear",
     });
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   it("create method should create a new empty order with user id", async () => {

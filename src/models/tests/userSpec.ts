@@ -3,7 +3,16 @@ import { User, UserStore } from "../user";
 const store = new UserStore();
 
 describe("User Model", () => {
+  const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
   let user: User;
+
+  beforeAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
 
   it("create method should create a user", async () => {
     user = await store.create({
